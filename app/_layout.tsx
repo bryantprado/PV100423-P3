@@ -9,28 +9,24 @@ export default function RootLayout() {
   const { user, loading, setLoading } = useAuthStore();
 
   useEffect(() => {
-    // Initialize auth state on app start. This effect runs only once due to empty dependencies.
-    // The original issue was that updates to the store could cause re-renders in other components,
-    // leading to navigation loops in index.tsx. By ensuring this only runs once and properly handling state,
-    // we prevent infinite loops.
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      useAuthStore.setState({ user: session?.user || null, session });
-      if (session?.user) {
-        useAuthStore.getState().fetchProfile();
-      }
-      setLoading(false);
-    });
-
     // Listen for auth changes. This subscription updates the store when auth state changes,
-    // but we ensure it doesn't cause unnecessary re-renders by not triggering effects in a loop.
+    // but we ensure it doesn't cause unnecessary re-renders by only updating if the state has changed.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      useAuthStore.setState({ user: session?.user || null, session });
-      if (session?.user) {
-        useAuthStore.getState().fetchProfile();
-      } else {
-        useAuthStore.setState({ profile: null });
+      const currentUser = useAuthStore.getState().user;
+      const currentLoading = useAuthStore.getState().loading;
+
+      if (session?.user?.id !== currentUser?.id) {
+        useAuthStore.setState({ user: session?.user || null, session });
+        if (session?.user) {
+          useAuthStore.getState().fetchProfile();
+        } else {
+          useAuthStore.setState({ profile: null });
+        }
       }
-      setLoading(false);
+
+      if (currentLoading) {
+        useAuthStore.setState({ loading: false });
+      }
     });
 
     return () => subscription.unsubscribe();

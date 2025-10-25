@@ -9,12 +9,11 @@ export default function Index() {
 
   useEffect(() => {
     // Prevent infinite navigation loops by tracking if navigation has already occurred.
-    // The original issue was that changes in 'user' or 'loading' would repeatedly trigger navigation,
-    // causing the "Maximum update depth exceeded" error when logging in successfully.
+    // Navigate to (tabs) for logged-in users to avoid loops on the same route.
     if (!loading && !hasNavigated.current) {
       hasNavigated.current = true;
       if (user) {
-        router.replace('/');
+        router.replace('/(tabs)');
       } else {
         router.replace('/onboarding');
       }

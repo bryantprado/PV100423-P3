@@ -20,7 +20,7 @@ export default function Login() {
     const result = await login(email, password);
     setLoading(false);
     if (result.success) {
-      router.replace('/');
+      router.replace('/(tabs)');
     } else {
       Alert.alert('Login Failed', result.error);
     }
@@ -46,7 +46,7 @@ export default function Login() {
       />
       <Button title="Login" onPress={handleLogin} disabled={loading} />
       <Link href="/register" className="text-blue-500 text-center mt-4">
-        Don't have an account? Register
+        Do not have an account? Register
       </Link>
     </View>
   );
