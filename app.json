@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "PV100423-P3",
-    "slug": "PV100423-P3",
+    "name": "TalentConnect",
+    "slug": "talentconnect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "pv100423p3",
+    "scheme": "talentconnect",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -44,6 +44,10 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "supabaseUrl": "https://vvdacssaskndexttnqgb.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2ZGFjc3Nhc2tuZGV4dHRucWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNTYxMTgsImV4cCI6MjA3NjczMjExOH0.pAAcTTCfHXXJi59Z1jaqPh1zimHHUtdfAKCB0_faYfM"
     }
   }
 }
