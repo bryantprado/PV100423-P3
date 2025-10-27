@@ -11,7 +11,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTOTP, setShowTOTP] = useState(false);
-  const { login, profile } = useAuthStore();
+  const [totpProfile, setTotpProfile] = useState<{ id: string; otp_secret: string } | null>(null);
+  const { login, profile, checkTOTPRequired } = useAuthStore();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -19,33 +20,48 @@ export default function Login() {
       return;
     }
     setLoading(true);
+
+    // First, check if TOTP is required for this email
+    const totpCheck = await checkTOTPRequired(email);
+    if (totpCheck.required && totpCheck.profile) {
+      setTotpProfile(totpCheck.profile);
+      setShowTOTP(true);
+      setLoading(false);
+      return;
+    }
+
+    // If no TOTP required, proceed with normal login
     const result = await login(email, password);
     setLoading(false);
     if (result.success) {
-      // Check if TOTP is enabled for this user
-      if (profile?.otp_secret) {
-        setShowTOTP(true);
-      } else {
-        router.replace('/(tabs)');
-      }
+      router.replace('/(tabs)');
     } else {
       Alert.alert('Login Failed', result.error);
     }
   };
 
-  const handleTOTPVerified = () => {
+  const handleTOTPVerified = async () => {
     setShowTOTP(false);
-    router.replace('/(tabs)');
+    setLoading(true);
+    // Now proceed with the actual login after TOTP verification
+    const result = await login(email, password);
+    setLoading(false);
+    if (result.success) {
+      router.replace('/(tabs)');
+    } else {
+      Alert.alert('Login Failed', result.error);
+    }
   };
 
   const handleTOTPCancel = () => {
     setShowTOTP(false);
+    setTotpProfile(null);
   };
 
   if (showTOTP) {
     return (
       <TOTPVerification
-        secret={profile?.otp_secret || ''}
+        secret={totpProfile?.otp_secret || ''}
         onSuccess={handleTOTPVerified}
         onCancel={handleTOTPCancel}
       />

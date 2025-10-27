@@ -64,7 +64,7 @@ const TOTPManager: React.FC = () => {
           <Button
             title="Desactivar TOTP"
             onPress={() => setShowDisableVerification(true)}
-            variant="secondary"
+            variant="primary"
           />
         </>
       ) : (

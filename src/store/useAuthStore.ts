@@ -30,6 +30,7 @@ interface AuthState {
   cleanupDuplicateProfiles: () => Promise<void>;
   cleanupEmptyProfiles: () => Promise<void>;
   setLoading: (loading: boolean) => void;
+  checkTOTPRequired: (email: string) => Promise<{ required: boolean; profile?: { id: string; otp_secret: string } }>;
   // Internal state
   _fetchingProfile?: boolean;
 }
@@ -251,5 +252,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     set({ profile: data });
     return { success: true };
+  },
+
+  checkTOTPRequired: async (email: string) => {
+    try {
+      const { data, error } = await supabase.rpc('fn_get_profile_by_email', { p_email: email });
+
+      if (error) {
+        console.error('Error checking TOTP:', error);
+        return { required: false };
+      }
+
+      if (!data || data.length === 0) {
+        return { required: false };
+      }
+
+      const profile = data[0];
+      return {
+        required: !!profile.otp_secret,
+        profile: { id: profile.id, otp_secret: profile.otp_secret }
+      };
+    } catch (error) {
+      console.error('Error in checkTOTPRequired:', error);
+      return { required: false };
+    }
   },
 }));
