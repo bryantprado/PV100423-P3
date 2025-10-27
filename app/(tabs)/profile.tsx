@@ -1,3 +1,4 @@
+import TOTPManager from '@/src/components/TOTPManager';
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -25,6 +26,7 @@ export default function Profile() {
           <Text className="text-lg mb-2">Skills: {profile.habilidades}</Text>
           <Text className="text-lg mb-2">Experience: {profile.experiencia}</Text>
           <Text className="text-lg mb-2">Rate: ${profile.tarifa_por_hora}/hr</Text>
+          <TOTPManager />
           <TouchableOpacity
             className="bg-blue-500 rounded-lg p-3 mt-4"
             onPress={() => router.push({ pathname: '/edit-profile' })}

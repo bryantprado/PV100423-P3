@@ -1,3 +1,4 @@
+import TOTPVerification from '@/src/components/TOTPVerification';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, View } from 'react-native';
@@ -9,7 +10,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuthStore();
+  const [showTOTP, setShowTOTP] = useState(false);
+  const { login, profile } = useAuthStore();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -20,11 +22,35 @@ export default function Login() {
     const result = await login(email, password);
     setLoading(false);
     if (result.success) {
-      router.replace('/(tabs)');
+      // Check if TOTP is enabled for this user
+      if (profile?.otp_secret) {
+        setShowTOTP(true);
+      } else {
+        router.replace('/(tabs)');
+      }
     } else {
       Alert.alert('Login Failed', result.error);
     }
   };
+
+  const handleTOTPVerified = () => {
+    setShowTOTP(false);
+    router.replace('/(tabs)');
+  };
+
+  const handleTOTPCancel = () => {
+    setShowTOTP(false);
+  };
+
+  if (showTOTP) {
+    return (
+      <TOTPVerification
+        secret={profile?.otp_secret || ''}
+        onSuccess={handleTOTPVerified}
+        onCancel={handleTOTPCancel}
+      />
+    );
+  }
 
   return (
     <View className="flex-1 justify-center p-6 bg-white">

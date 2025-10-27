@@ -11,6 +11,7 @@ interface Profile {
   experiencia: string;
   tarifa_por_hora: number;
   foto: string | null;
+  otp_secret: string | null;
   created_at: string;
 }
 
@@ -24,6 +25,8 @@ interface AuthState {
   logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ success: boolean; error?: string }>;
+  enableTOTP: (secret: string) => Promise<{ success: boolean; error?: string }>;
+  disableTOTP: () => Promise<{ success: boolean; error?: string }>;
   cleanupDuplicateProfiles: () => Promise<void>;
   cleanupEmptyProfiles: () => Promise<void>;
   setLoading: (loading: boolean) => void;
@@ -91,6 +94,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           experiencia: '',
           tarifa_por_hora: 0,
           foto: null,
+          otp_secret: null,
         })
         .select()
         .single();
@@ -212,6 +216,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // Update the local state with the new profile data
     set({ profile: result });
 
+    return { success: true };
+  },
+
+  enableTOTP: async (secret) => {
+    const { user } = get();
+    if (!user || !user.id || user.id.trim() === '') return { success: false, error: 'No user logged in' };
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ otp_secret: secret })
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) return { success: false, error: error.message };
+
+    set({ profile: data });
+    return { success: true };
+  },
+
+  disableTOTP: async () => {
+    const { user } = get();
+    if (!user || !user.id || user.id.trim() === '') return { success: false, error: 'No user logged in' };
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ otp_secret: null })
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) return { success: false, error: error.message };
+
+    set({ profile: data });
     return { success: true };
   },
 }));
