@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useAuthStore } from '../../src/store/useAuthStore';
 
 export default function Profile() {
@@ -11,6 +11,15 @@ export default function Profile() {
       <Text className="text-2xl font-bold mb-4">My Profile</Text>
       {profile ? (
         <>
+          <View className="items-center mb-6">
+            {profile.foto ? (
+              <Image source={{ uri: profile.foto }} className="w-32 h-32 rounded-full mb-2" />
+            ) : (
+              <View className="w-32 h-32 bg-gray-200 rounded-full justify-center items-center mb-2">
+                <Text className="text-gray-500">No Photo</Text>
+              </View>
+            )}
+          </View>
           <Text className="text-lg mb-2">Name: {profile.nombre}</Text>
           <Text className="text-lg mb-2">Description: {profile.descripcion}</Text>
           <Text className="text-lg mb-2">Skills: {profile.habilidades}</Text>

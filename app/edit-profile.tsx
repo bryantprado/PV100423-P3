@@ -34,7 +34,6 @@ export default function EditProfile() {
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -56,6 +55,7 @@ export default function EditProfile() {
       habilidades,
       experiencia,
       tarifa_por_hora: parseFloat(tarifaPorHora),
+      foto,
     });
     setLoading(false);
     if (result.success) {
