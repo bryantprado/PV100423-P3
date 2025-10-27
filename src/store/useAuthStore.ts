@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   fetchProfile: async () => {
     const { user, _fetchingProfile } = get();
-    if (!user || _fetchingProfile) return;
+    if (!user || !user.id || user.id.trim() === '' || _fetchingProfile) return;
 
     set({ _fetchingProfile: true });
 
@@ -123,7 +123,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   cleanupDuplicateProfiles: async () => {
     const { user } = get();
-    if (!user) return;
+    if (!user || !user.id || user.id.trim() === '') return;
 
     // Get all profiles for the user
     const { data: profiles, error } = await supabase
@@ -182,7 +182,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   updateProfile: async (updates) => {
     const { user, profile } = get();
-    if (!user) return { success: false, error: 'No user logged in' };
+    if (!user || !user.id || user.id.trim() === '') return { success: false, error: 'No user logged in' };
 
     let result;
 

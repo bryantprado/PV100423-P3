@@ -17,7 +17,7 @@ export default function RootLayout() {
 
       if (session?.user?.id !== currentUser?.id) {
         useAuthStore.setState({ user: session?.user || null, session });
-        if (session?.user) {
+        if (session?.user && session.user.id && session.user.id.trim() !== '') {
           useAuthStore.getState().fetchProfile();
         } else {
           useAuthStore.setState({ profile: null });
