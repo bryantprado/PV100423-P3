@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../../src/lib/supabase';
 import { useAuthStore } from '../../src/store/useAuthStore';
@@ -63,15 +63,15 @@ export default function Explore() {
     }
   }, [fetchProfiles]);
 
-  const filteredProfiles = profiles.filter(profile => {
+  const filteredProfiles = useMemo(() => {
     const searchTerm = search.toLowerCase();
-    return (
+    return profiles.filter(profile =>
       profile.nombre?.toLowerCase().includes(searchTerm) ||
       profile.habilidades?.toLowerCase().includes(searchTerm) ||
       profile.descripcion?.toLowerCase().includes(searchTerm) ||
       profile.experiencia?.toLowerCase().includes(searchTerm)
     );
-  });
+  }, [profiles, search]);
 
   const renderProfile = ({ item }: { item: Profile }) => (
     <TouchableOpacity
